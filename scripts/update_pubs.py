@@ -109,10 +109,10 @@ def generate_publication_html(item):
     links = []
     if 'DOI' in item:
         doi_url = f"https://doi.org/{item['DOI']}"
-        links.append(f'<a href="{doi_url}" target="_blank" class="publication-link paper-link">Paper</a>')
+        links.append(f'[<a href="{doi_url}" target="_blank" class="publication-link paper-link">Paper</a>]')
     
     if 'URL' in item and 'github.com' in item['URL'].lower():
-        links.append(f'<a href="{item["URL"]}" target="_blank" class="publication-link code-link">Code</a>')
+        links.append(f'[<a href="{item["URL"]}" target="_blank" class="publication-link code-link">Code</a>]')
     
     if links:
         html += ' '.join(links) + '<br>\n'
