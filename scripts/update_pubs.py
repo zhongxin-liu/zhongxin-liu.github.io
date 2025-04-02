@@ -70,6 +70,9 @@ def format_venue(item):
         if 'issued' in item and 'date-parts' in item['issued']:
             year = item['issued']['date-parts'][0][0]
             venue_parts.append(str(year))
+        
+        if 'issue' in item and 'volume' in item:
+            venue_parts.append(f"{item['volume']}({item['issue']})")  # Added the missing closing curly brace here
     
     return ', '.join(venue_parts)
 
