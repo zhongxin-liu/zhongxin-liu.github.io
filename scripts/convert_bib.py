@@ -45,6 +45,15 @@ def convert_bib_to_json(input_file, output_file):
         for entry in entries:
             if 'title' in entry:
                 entry['title'] = title_case(entry['title'])
+            if 'container-title' in entry:
+                container_title = title_case(entry['container-title'])
+                if ' (' in container_title:
+                    title, short = container_title.split(' (')
+                    short = short.upper()
+                    container_title = ' ('.join([title, short])
+                    entry['container-title'] = container_title
+            if 'title-short' in entry:
+                entry['title-short'] = title_case(entry['title-short'])
         
         # Write the modified JSON to the output file
         with open(output_file, 'w', encoding='utf-8') as f:
