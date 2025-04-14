@@ -85,8 +85,9 @@ def generate_publication_html(item):
     html = '<li>\n'
     
     # Title
+    shorttitle = item.get('title-short', '')
     title = item.get('title', '')
-    html += f'<b>{title}</b><br>\n'
+    html += f'<b><span style="color: #0b5394;">[{shorttitle}]</span> {title}</b><br>\n'
     
     # Authors
     if 'author' in item:
