@@ -52,6 +52,8 @@ def convert_bib_to_json(input_file, output_file):
                     short = short.upper()
                     if short.endswith("FINDINGS)"):
                         short = short.replace("FINDINGS", "Findings")
+                    if short.startswith("NEURIPS"):
+                        short = short.replace("NEURIPS", "NeurIPS")
                     container_title = ' ('.join([title, short])
                     entry['container-title'] = container_title
             if 'title-short' in entry:
