@@ -14,8 +14,11 @@ def title_case(text):
     result = []
     
     for i, word in enumerate(words):
+        # Preserve intentional mixed-case words such as iCoRe or ReCode.
+        if any(ch.isupper() for ch in word[1:]) and any(ch.islower() for ch in word):
+            result.append(word)
         # Always capitalize first and last word
-        if word[0].isupper():
+        elif word[0].isupper():
             result.append(word)
         elif i == 0 or i == len(words) - 1:
             result.append(word.capitalize())
@@ -55,7 +58,7 @@ def convert_bib_to_json(input_file, output_file):
                     if short.startswith("NEURIPS"):
                         short = short.replace("NEURIPS", "NeurIPS")
                     container_title = ' ('.join([title, short])
-                    entry['container-title'] = container_title
+                entry['container-title'] = container_title
             if 'title-short' in entry:
                 entry['title-short'] = title_case(entry['title-short'])
         
