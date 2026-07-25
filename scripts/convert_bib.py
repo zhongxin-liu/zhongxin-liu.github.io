@@ -3,6 +3,12 @@ import panflute as pf
 import json
 import sys
 from pathlib import Path
+from generate_cv_publications import parse_bibtex
+
+
+def bibtex_title_text(text):
+    """Return the display text while preserving BibTeX title capitalization."""
+    return text.replace('{', '').replace('}', '')
 
 def title_case(text):
     # List of words to keep lowercase
@@ -33,9 +39,16 @@ def title_case(text):
 
 def convert_bib_to_json(input_file, output_file):
     try:
+        bibtex = Path(input_file).read_text(encoding='utf-8')
+        source_titles = {
+            entry.key: bibtex_title_text(entry.fields['title'])
+            for entry in parse_bibtex(bibtex)
+            if 'title' in entry.fields
+        }
+
         # Run pandoc to convert BibTeX to JSON
         doc = pf.convert_text(
-            Path(input_file).read_text(encoding='utf-8'),
+            bibtex,
             input_format='bibtex',
             output_format='csljson',
             standalone=True
@@ -44,10 +57,12 @@ def convert_bib_to_json(input_file, output_file):
         # Parse the JSON
         entries = json.loads(doc)
         
-        # Apply title case to titles
+        # Preserve source title capitalization and normalize other display fields.
         for entry in entries:
             if 'title' in entry:
-                entry['title'] = title_case(entry['title'])
+                entry['title'] = source_titles.get(
+                    entry.get('id'), title_case(entry['title'])
+                )
             if 'container-title' in entry:
                 container_title = title_case(entry['container-title'])
                 if ' (' in container_title:

@@ -1,2 +1,4 @@
 *.bak
 .qodo
+metadata/pub2.json
+scripts/__pycache__/

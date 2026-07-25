@@ -5,6 +5,30 @@ import sys
 import re
 from pathlib import Path
 from datetime import datetime
+from generate_cv_publications import parse_bibtex
+
+
+def bibtex_title_text(text):
+    """Return the display text while preserving BibTeX title capitalization."""
+    return text.replace('{', '').replace('}', '')
+
+
+def apply_source_titles(publications, bib_path):
+    """Overlay titles from the canonical BibTeX file onto converted CSL data."""
+    if not bib_path.exists():
+        return publications
+
+    entries = parse_bibtex(bib_path.read_text(encoding='utf-8'))
+    source_titles = {
+        entry.key: bibtex_title_text(entry.fields['title'])
+        for entry in entries
+        if 'title' in entry.fields
+    }
+    for publication in publications:
+        source_title = source_titles.get(publication.get('id'))
+        if source_title:
+            publication['title'] = source_title
+    return publications
 
 def load_csl_json(file_path):
     """Load and parse CSL JSON file."""
@@ -161,6 +185,7 @@ def main():
     
     # Load the CSL JSON data
     publications = load_csl_json(json_path)
+    publications = apply_source_titles(publications, json_path.with_suffix('.bib'))
     
     # Read the current HTML content
     with open(html_path, 'r', encoding='utf-8') as f:
