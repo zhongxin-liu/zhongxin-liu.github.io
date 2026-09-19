@@ -136,12 +136,21 @@ def generate_publication_html(item):
     # Add DOI and GitHub links
     links = []
     
-    if 'URL' in item and ('github.com' in item['URL'].lower() or 'zenodo' in item['URL'].lower()):
-        links.append(f'<a href="{item["URL"]}" target="_blank" class="publication-link code-link">Code</a>')
+    # Every paper has a DOI — the publisher's DOI once formally published,
+    # an arXiv preprint DOI before that. So the DOI alone decides where
+    # "Paper" points, and updating `doi` in the .bib is all it takes when a
+    # paper goes from preprint to published. OpenReview is only a fallback
+    # for entries that have no DOI yet. Exactly one Paper button, always.
+    if 'URL' in item:
+        url = item['URL']
+        lower_url = url.lower()
+        if 'github.com' in lower_url or 'zenodo' in lower_url:
+            links.append(f'<a href="{url}" target="_blank" class="publication-link code-link">Code</a>')
 
     if 'DOI' in item:
-        doi_url = f"https://doi.org/{item['DOI']}"
-        links.append(f'<a href="{doi_url}" target="_blank" class="publication-link paper-link">Paper</a>')
+        links.append(f'<a href="https://doi.org/{item["DOI"]}" target="_blank" class="publication-link paper-link">Paper</a>')
+    elif 'URL' in item and 'openreview.net' in item['URL'].lower():
+        links.append(f'<a href="{url}" target="_blank" class="publication-link paper-link">Paper</a>')
     
     if links:
         html += ' '.join(links) + '<br>\n'
